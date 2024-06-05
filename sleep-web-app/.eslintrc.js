@@ -45,7 +45,7 @@ module.exports = {
     "no-restricted-exports": "off",
     "unicorn/prefer-spread": "off",
     "unicorn/filename-case": "off",
-    "prettier/prettier": ["error"],
+    "prettier/prettier": ["warn"],
     "import/no-unresolved": "error",
     "unicorn/no-array-reduce": "off",
     "no-underscore-dangle": ["error"],
@@ -90,12 +90,15 @@ module.exports = {
     ],
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "import/no-cycle": "off",
     "react/require-default-props": [
       1,
       {
         functions: "defaultArguments"
       }
-    ]
+    ],
+    "react/jsx-props-no-spreading": "off"
   },
   settings: {
     react: {

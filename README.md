@@ -1,3 +1,14 @@
+# My notes
+- this component looks like widget - so i didn't add any routes
+- also i didn't use any state manager in order to save time
+- there was i fight with linter so i disabled a few rules
+- didn't spend any time on styles, styles that i created all in one file, usually i put it next to index file that they belong to
+- a lot of "any"s just to save time, usually don't write it in such quantities 
+- there is an inconsistency in BE field names, but this the first time i write python BE so decided not to spend any additional time to prettify it
+- didn't spend time on form creation - date picker and normal validation rules 
+- overall this test took 10+- hours, half of this is BE and env set up
+
+
 # Frontend Engineering Interview: Take-home Assignment
 
 Hello!

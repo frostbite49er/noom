@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from django.db.models import Avg, F, Count
+from django.db.models import Avg, F, Count, FloatField
+from django.db.models.functions import Extract, Cast
+from datetime import datetime
 
 from .models import SleepLog, Feeling, SleepLogSerializer
 from .validation import parse_and_validate_datetime, validate_feeling_field, validate_bed_time_sleep_interval
@@ -57,6 +59,8 @@ class SleepAvgLogView(APIView):
                 "first_date": None,
                 "last_date": None,
                 "average_sleep_time": None,
+                "average_bed_time_start": None,
+                "average_bed_time_end": None,
                 "count_bad": 0,
                 "count_ok": 0,
                 "count_good": 0
@@ -68,6 +72,25 @@ class SleepAvgLogView(APIView):
         avg_sleep_time = sleep_logs.aggregate(avg_sleep=Avg(F('bed_time_end') - F('bed_time_start')))['avg_sleep']
         avg_sleep_time_hours = avg_sleep_time.total_seconds() / 3600 if avg_sleep_time else 0
 
+        average_bed_time_start_epoch = sleep_logs.annotate(
+            bed_time_start_epoch=Extract('bed_time_start', 'epoch')
+        ).aggregate(average_bed_start=Avg('bed_time_start_epoch', output_field=FloatField()))['average_bed_start']
+
+        average_bed_time_end_epoch = sleep_logs.annotate(
+            bed_time_end_epoch=Extract('bed_time_end', 'epoch')
+        ).aggregate(average_bed_end=Avg('bed_time_end_epoch', output_field=FloatField()))['average_bed_end']
+
+        average_bed_time_start = (
+            datetime.fromtimestamp(average_bed_time_start_epoch).isoformat()
+            if average_bed_time_start_epoch is not None
+            else None
+        )
+        average_bed_time_end = (
+            datetime.fromtimestamp(average_bed_time_end_epoch).isoformat()
+            if average_bed_time_end_epoch is not None
+            else None
+        )
+
         feeling_counts = sleep_logs.values('feeling').annotate(count=Count('feeling'))
         count_bad = next((item['count'] for item in feeling_counts if item['feeling'] == Feeling.Bad), 0)
         count_ok = next((item['count'] for item in feeling_counts if item['feeling'] == Feeling.Ok), 0)
@@ -76,7 +99,9 @@ class SleepAvgLogView(APIView):
         return Response({
            "first_date": first_date,
            "last_date": last_date,
-           "average_sleep_time": avg_sleep_time_hours,
+           "average_sleep_time": avg_sleep_time_hours,œ
+           "average_bed_time_start": average_bed_time_start,
+           "average_bed_time_end": average_bed_time_end,
            "count_bad": count_bad,
            "count_ok": count_ok,
            "count_good": count_good
