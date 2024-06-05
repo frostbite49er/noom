@@ -99,7 +99,7 @@ class SleepAvgLogView(APIView):
         return Response({
            "first_date": first_date,
            "last_date": last_date,
-           "average_sleep_time": avg_sleep_time_hours,œ
+           "average_sleep_time": avg_sleep_time_hours,
            "average_bed_time_start": average_bed_time_start,
            "average_bed_time_end": average_bed_time_end,
            "count_bad": count_bad,
